@@ -2,8 +2,6 @@ module feedMe
 
 go 1.19
 
-require (
-	github.com/dghubble/oauth1 v0.7.1
-	github.com/gorilla/mux v1.8.0
-	github.com/joho/godotenv v1.4.0
-)
+require github.com/tebeka/selenium v0.9.9
+
+require github.com/blang/semver v3.5.1+incompatible // indirect
