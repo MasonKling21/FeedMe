@@ -12,15 +12,15 @@ import (
 func main() {
 
 	const (
-		seleniumPath     = ""
-		chromeDriverPath = ""
+		seleniumPath     = "./selenium-server-4.5.3.jar"
+		chromeDriverPath = "./chromedriver.exe"
 		port             = 8080
 	)
 
 	opts := []selenium.ServiceOption{
-		selenium.StartFrameBuffer(),            // Start an X frame buffer for the browser to run in.
-		selenium.GeckoDriver(chromeDriverPath), // Specify the path to GeckoDriver in order to use Firefox.
-		selenium.Output(os.Stderr),             // Output debug information to STDERR.
+		//selenium.StartFrameBuffer(),             // Start an X frame buffer for the browser to run in.
+		selenium.ChromeDriver(chromeDriverPath), // Specify the path to ChromeDriver in order to use Chrome.
+		selenium.Output(os.Stderr),              // Output debug information to STDERR.
 	}
 
 	selenium.SetDebug(true)
