@@ -10,9 +10,6 @@ TODO
 
 Ensure that path is right after login
 
-Get percentages of previous days following
-and compare to the likes, retweets, and comments
-
 Add posting functionality
 
 Create art to make the bot feel alive
@@ -77,32 +74,72 @@ def checkStatus(driver):
     val = driver.find_elements(By.XPATH, "//div[@data-testid='like']")
     likes = val[1]
 
-    getStatus(followers, replies, retweets, likes)
+    getStatus(followers, likes, replies, retweets)
 
-def getStatus(followers, replies, retweets, likes):
+def getStatus(followers,  likes, replies, retweets):
+    food = 0
+    play = 0
+    motivation = 0
     ### If like count met add 1 to food
     ### Else remove 1 to food
     ### Max of 7; if 0 then bot dies
     if(likes >= math.floor(followers * 0.2)):
-        print("Likes check")
+        food = 1
     else:
-        print("Like count not met")
+        food = -1
 
     ### If reply count met add 1 to play
     ### Else remove 1 to play
     ### Max of 7; if 0 then bot dies
     if(replies >= math.floor(followers * 0.05)):
-        print("Replies check")
+        play = 1
     else:
-        print("Reply count not met")
+        play = -1
 
     ### If reply count met add 1 to motivation
     ### Else remove 1 to motivation
     ### Max of 7; if 0 then bot dies
     if(retweets >= math.floor(followers * 0.01)):
-        print("Retweets check")
+        motivation = 1
     else:
-        print("Retweet count not met")
+        motivation = -1
+
+    updateStatus(food, play, motivation)
+
+### Update status file
+def updateStatus(food, play, motivation):
+    foodStatus = 0
+    playStatus = 0
+    motivationStatus = 0
+
+    with open('status.txt', 'r') as reader:
+        foodStatus = reader.readline()
+        playStatus = reader.readline()
+        motivationStatus = reader.readline()
+    
+    foodStatus += food
+    playStatus += play
+    motivationStatus += motivation
+
+    if(foodStatus > 7):
+        foodStatus = 7
+    if(playStatus > 7):
+        playStatus = 7
+    if(motivationStatus > 7):
+        motivationStatus = 7
+
+    if(foodStatus == 0 or playStatus == 0 or motivationStatus == 0):
+        dead()
+
+    statuses = [str(foodStatus), str(playStatus), str(motivationStatus)]
+
+    with open('status.txt', 'w') as writer:
+        writer.writelines(statuses)
+
+### RIP
+### Print out dead pet and never run again
+def dead():
+    print("I'm dead")
 
 def getFollowers(followers):
     newFollowers = ""
