@@ -3,6 +3,22 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 import time
+import math
+
+"""
+TODO
+
+Ensure that path is right after login
+
+Get percentages of previous days following
+and compare to the likes, retweets, and comments
+
+Add posting functionality
+
+Create art to make the bot feel alive
+
+More?????
+"""
 
 def main():
     driver = webdriver.Chrome()
@@ -45,16 +61,59 @@ def checkStatus(driver):
     ### Get number of followers
     ### Store number of followers for later use
     val = driver.find_elements(By.XPATH, "//a[@role='link']")
+    followers = val[8]
+
+    followers = getFollowers(str(followers))
 
     ### Get number of replies on last tweet
     val = driver.find_elements(By.XPATH, "//div[@data-testid='reply']")
+    replies = val[1]
 
     ### Get number of retweets on last tweet
     val = driver.find_elements(By.XPATH, "//div[@data-testid='retweet']")
+    retweets = val[1]
 
     ### Get number of likes on last tweet
     val = driver.find_elements(By.XPATH, "//div[@data-testid='like']")
+    likes = val[1]
 
+    getStatus(followers, replies, retweets, likes)
+
+def getStatus(followers, replies, retweets, likes):
+    ### If like count met add 1 to food
+    ### Else remove 1 to food
+    ### Max of 7; if 0 then bot dies
+    if(likes >= math.floor(followers * 0.2)):
+        print("Likes check")
+    else:
+        print("Like count not met")
+
+    ### If reply count met add 1 to play
+    ### Else remove 1 to play
+    ### Max of 7; if 0 then bot dies
+    if(replies >= math.floor(followers * 0.05)):
+        print("Replies check")
+    else:
+        print("Reply count not met")
+
+    ### If reply count met add 1 to motivation
+    ### Else remove 1 to motivation
+    ### Max of 7; if 0 then bot dies
+    if(retweets >= math.floor(followers * 0.01)):
+        print("Retweets check")
+    else:
+        print("Retweet count not met")
+
+def getFollowers(followers):
+    newFollowers = ""
+    
+    with open('followers.txt', 'r') as reader:
+        newFollowers = reader.read()
+
+    with open('followers.txt', 'w') as writer:
+        writer.write(followers)
+
+    return newFollowers
 
 
 
