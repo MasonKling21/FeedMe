@@ -10,6 +10,9 @@ TODO
 
 Ensure that path is right after login
 
+Handle login errors such as activity warning popups
+Basically just check that it's on the correct page
+
 Add posting functionality
 
 Create art to make the bot feel alive
@@ -74,9 +77,9 @@ def checkStatus(driver):
     val = driver.find_elements(By.XPATH, "//div[@data-testid='like']")
     likes = val[1]
 
-    getStatus(followers, likes, replies, retweets)
+    getStatus(driver, followers, likes, replies, retweets)
 
-def getStatus(followers,  likes, replies, retweets):
+def getStatus(driver, followers,  likes, replies, retweets):
     food = 0
     play = 0
     motivation = 0
@@ -104,10 +107,10 @@ def getStatus(followers,  likes, replies, retweets):
     else:
         motivation = -1
 
-    updateStatus(food, play, motivation)
+    updateStatus(driver, food, play, motivation)
 
 ### Update status file
-def updateStatus(food, play, motivation):
+def updateStatus(driver, food, play, motivation):
     foodStatus = 0
     playStatus = 0
     motivationStatus = 0
@@ -131,7 +134,7 @@ def updateStatus(food, play, motivation):
     if(foodStatus == 0 or playStatus == 0 or motivationStatus == 0):
         dead()
 
-    postPet()
+    postPet(driver)
     
     statuses = [str(foodStatus) + "\n", str(playStatus) + "\n", str(motivationStatus) + "\n"]
 
@@ -146,8 +149,10 @@ def dead():
 ### Post an ascii pet
 ### The ascii should be different depending
 ### on the level of food, play, and motivation
-def postPet():
-    print("Pet")
+def postPet(driver):
+    driver.find_elements(By.XPATH, "//div[@data-block='true']").send_keys("PUT ASCII ART HERE")
+
+    driver.find_elements(By.XPATH, "//div[@data-testid='tweetButton']").click()
 
 ### Returns number of followers for the previous day
 def getFollowers(followers):
@@ -164,4 +169,4 @@ def getFollowers(followers):
 
 
 if __name__ == "__main__":
-    updateStatus(-1, -1, 1)
+    main()
