@@ -117,9 +117,9 @@ def updateStatus(food, play, motivation):
         playStatus = reader.readline()
         motivationStatus = reader.readline()
     
-    foodStatus += food
-    playStatus += play
-    motivationStatus += motivation
+    foodStatus = int(foodStatus) + food
+    playStatus = int(playStatus) + play
+    motivationStatus = int(motivationStatus) + motivation
 
     if(foodStatus > 7):
         foodStatus = 7
@@ -131,7 +131,9 @@ def updateStatus(food, play, motivation):
     if(foodStatus == 0 or playStatus == 0 or motivationStatus == 0):
         dead()
 
-    statuses = [str(foodStatus), str(playStatus), str(motivationStatus)]
+    postPet()
+    
+    statuses = [str(foodStatus) + "\n", str(playStatus) + "\n", str(motivationStatus) + "\n"]
 
     with open('status.txt', 'w') as writer:
         writer.writelines(statuses)
@@ -141,6 +143,13 @@ def updateStatus(food, play, motivation):
 def dead():
     print("I'm dead")
 
+### Post an ascii pet
+### The ascii should be different depending
+### on the level of food, play, and motivation
+def postPet():
+    print("Pet")
+
+### Returns number of followers for the previous day
 def getFollowers(followers):
     newFollowers = ""
     
@@ -155,4 +164,4 @@ def getFollowers(followers):
 
 
 if __name__ == "__main__":
-    main()
+    updateStatus(-1, -1, 1)
