@@ -8,14 +8,8 @@ import math
 """
 TODO
 
-Ensure that path is right after login
-
 Handle login errors such as activity warning popups
 Basically just check that it's on the correct page
-
-Add posting functionality
-
-Create art to make the bot feel alive
 
 More?????
 """
@@ -31,7 +25,9 @@ def main():
     checkStatus(driver)
 
 def login(driver):
-    driver.find_element(By.CSS_SELECTOR, "input[type='text']").send_keys('USERNAME')
+    time.sleep(2)
+
+    driver.find_element(By.CSS_SELECTOR, "input[autocomplete='username']").send_keys('EMAIL')
 
     time.sleep(2)
 
@@ -42,7 +38,14 @@ def login(driver):
 
     time.sleep(2)
 
-    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys('PASSWORD')
+    if(len(driver.find_elements(By.XPATH, "//span[text()='Phone or username']")) > 0):
+        driver.find_element(By.XPATH, "//span[text()='Phone or username']").send_keys('USERNAME')
+
+        buttons = driver.find_elements(By.XPATH, "//div[@role='button']")
+
+        buttons[1].click()
+
+    driver.find_element(By.CSS_SELECTOR, "input[name='password']").send_keys('PASSWORD')
 
     time.sleep(2)
 
@@ -132,7 +135,7 @@ def updateStatus(driver, food, play, motivation):
         motivationStatus = 7
 
     if(foodStatus == 0 or playStatus == 0 or motivationStatus == 0):
-        dead()
+        dead(driver)
 
     postPet(driver)
     
@@ -143,8 +146,10 @@ def updateStatus(driver, food, play, motivation):
 
 ### RIP
 ### Print out dead pet and never run again
-def dead():
-    print("I'm dead")
+def dead(driver):
+    driver.find_elements(By.XPATH, "//div[@data-block='true']").send_keys("I'm Dead!")
+
+    driver.find_elements(By.XPATH, "//div[@data-testid='tweetButton']").click()
 
 ### Post an ascii pet
 ### The ascii should be different depending
