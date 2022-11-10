@@ -5,11 +5,35 @@ from selenium.webdriver.common.by import By
 import time
 import math
 
+### Time between posts
+### 1440 is 24 hours
+timeInterval = 1440
+
+with open('../info.txt', 'r') as reader:
+    mylist = reader.read().splitlines() 
+
+EMAIL = mylist[0]
+USERNAME = mylist[1]
+PASSWORD = mylist[2]
+
 """
 TODO
 
 Handle login errors such as activity warning popups
 Basically just check that it's on the correct page
+
+Make sure selenium webdriver doesn't keep account logged in
+If it does handle it
+
+Login doesn't go to profile so after login bot needs to
+go to profile page instead of feed so that it can
+obtain likes, comments, retweets, and followers
+
+Turn food, play, and motivation statuses into list
+Because the code is redundant as is
+
+Make the sleep calls more sophisticated
+i.e. make sure page is loaded, don't waste uneccesary time, etc.
 
 More?????
 """
@@ -27,7 +51,7 @@ def main():
 def login(driver):
     time.sleep(2)
 
-    driver.find_element(By.CSS_SELECTOR, "input[autocomplete='username']").send_keys('EMAIL')
+    driver.find_element(By.CSS_SELECTOR, "input[autocomplete='username']").send_keys(EMAIL)
 
     time.sleep(2)
 
@@ -38,14 +62,15 @@ def login(driver):
 
     time.sleep(2)
 
+    ### Not interactable????
     if(len(driver.find_elements(By.XPATH, "//span[text()='Phone or username']")) > 0):
-        driver.find_element(By.XPATH, "//span[text()='Phone or username']").send_keys('USERNAME')
+        driver.find_element(By.XPATH, "//span[text()='Phone or username']").send_keys(USERNAME)
 
         buttons = driver.find_elements(By.XPATH, "//div[@role='button']")
 
         buttons[1].click()
 
-    driver.find_element(By.CSS_SELECTOR, "input[name='password']").send_keys('PASSWORD')
+    driver.find_element(By.CSS_SELECTOR, "input[name='password']").send_keys(PASSWORD)
 
     time.sleep(2)
 
@@ -53,6 +78,10 @@ def login(driver):
     buttons = driver.find_elements(By.XPATH, "//div[@role='button']")
     ### The 3rd button is the 'Login' button
     buttons[2].click()
+
+    ### Bot logged in, go to profile page rather than feed
+    print("Go to profile here")
+
 
 ### Compares the number of likes, comments, and retweets of the most
 ### recent post against the amount of followers at the time of the post
@@ -151,6 +180,9 @@ def dead(driver):
 
     driver.find_elements(By.XPATH, "//div[@data-testid='tweetButton']").click()
 
+    ### Bot dead so end program
+    exit()
+
 ### Post an ascii pet
 ### The ascii should be different depending
 ### on the level of food, play, and motivation
@@ -163,9 +195,12 @@ def postPet(driver):
 def getFollowers(followers):
     newFollowers = ""
     
+    ### Get follower amount from previous day
     with open('followers.txt', 'r') as reader:
         newFollowers = reader.read()
 
+    ### Write new follower count to file
+    ### Will be utilized the next day
     with open('followers.txt', 'w') as writer:
         writer.write(followers)
 
@@ -174,4 +209,7 @@ def getFollowers(followers):
 
 
 if __name__ == "__main__":
-    main()
+    ### Do until bot dies
+    while(True):
+        main()
+        time.sleep(timeInterval)
