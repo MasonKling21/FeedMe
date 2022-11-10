@@ -6,8 +6,8 @@ import time
 import math
 
 ### Time between posts
-### 1440 is 24 hours
-timeInterval = 1440
+### 86400 seconds is equivalent to 24 hours
+timeInterval = 86400
 
 with open('../info.txt', 'r') as reader:
     mylist = reader.read().splitlines() 
@@ -23,7 +23,7 @@ Handle login errors such as activity warning popups
 Basically just check that it's on the correct page
 
 Make sure selenium webdriver doesn't keep account logged in
-If it does handle it
+If it does, handle it
 
 Login doesn't go to profile so after login bot needs to
 go to profile page instead of feed so that it can
@@ -43,6 +43,10 @@ def main():
     driver.get('http://twitter.com/i/flow/login')
 
     login(driver)
+
+    ### Bot logged in, go to profile page rather than feed
+    profileLink = "http://twitter.com/" + USERNAME
+    driver.get(profileLink)
 
     time.sleep(2)
 
@@ -78,9 +82,6 @@ def login(driver):
     buttons = driver.find_elements(By.XPATH, "//div[@role='button']")
     ### The 3rd button is the 'Login' button
     buttons[2].click()
-
-    ### Bot logged in, go to profile page rather than feed
-    print("Go to profile here")
 
 
 ### Compares the number of likes, comments, and retweets of the most
