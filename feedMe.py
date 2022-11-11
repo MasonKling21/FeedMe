@@ -41,10 +41,9 @@ def main():
     login(driver)
 
     ### Bot logged in, go to profile page rather than feed
-    profileLink = "http://twitter.com/" + USERNAME
-    driver.get(profileLink)
+    driver.find_element(By.XPATH, "//a[@aria-label='Profile']").click()
 
-    time.sleep(2)
+    time.sleep(5)
 
     checkStatus(driver)
 
@@ -144,22 +143,28 @@ def updateStatus(driver, food, play, motivation):
     with open('status.txt', 'r') as reader:
         statuses = reader.read().splitlines() 
     
+    ### Status[0] is food
     statuses[0] = int(statuses[0]) + food
+
+    ### Status[1] is play
     statuses[1] = int(statuses[1]) + play
+
+    ### Status[2] is motivation
     statuses[2] = int(statuses[2]) + motivation
 
     for i in statuses:
+        ### 7 is max satiety
         if(i > 7):
             i = 7
+        ### 0 means bot has died
         if(i == 0):
             dead(driver)
 
     postPet(driver)
-    
-    statuses = [str(statuses[0]) + "\n", str(statuses[1]) + "\n", str(statuses[2]) + "\n"]
 
     with open('status.txt', 'w') as writer:
-        writer.writelines(statuses)
+        for i in statuses:
+            writer.write("%s\n" % i)
 
 ### RIP
 ### Print out dead pet and never run again
