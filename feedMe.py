@@ -25,10 +25,6 @@ Basically just check that it's on the correct page
 Make sure selenium webdriver doesn't keep account logged in
 If it does, handle it
 
-Login doesn't go to profile so after login bot needs to
-go to profile page instead of feed so that it can
-obtain likes, comments, retweets, and followers
-
 Turn food, play, and motivation statuses into list
 Because the code is redundant as is
 
@@ -144,32 +140,23 @@ def getStatus(driver, followers,  likes, replies, retweets):
 
 ### Update status file
 def updateStatus(driver, food, play, motivation):
-    foodStatus = 0
-    playStatus = 0
-    motivationStatus = 0
 
     with open('status.txt', 'r') as reader:
-        foodStatus = reader.readline()
-        playStatus = reader.readline()
-        motivationStatus = reader.readline()
+        statuses = reader.read().splitlines() 
     
-    foodStatus = int(foodStatus) + food
-    playStatus = int(playStatus) + play
-    motivationStatus = int(motivationStatus) + motivation
+    statuses[0] = int(statuses[0]) + food
+    statuses[1] = int(statuses[1]) + play
+    statuses[2] = int(statuses[2]) + motivation
 
-    if(foodStatus > 7):
-        foodStatus = 7
-    if(playStatus > 7):
-        playStatus = 7
-    if(motivationStatus > 7):
-        motivationStatus = 7
-
-    if(foodStatus == 0 or playStatus == 0 or motivationStatus == 0):
-        dead(driver)
+    for i in statuses:
+        if(i > 7):
+            i = 7
+        if(i == 0):
+            dead(driver)
 
     postPet(driver)
     
-    statuses = [str(foodStatus) + "\n", str(playStatus) + "\n", str(motivationStatus) + "\n"]
+    statuses = [str(statuses[0]) + "\n", str(statuses[1]) + "\n", str(statuses[2]) + "\n"]
 
     with open('status.txt', 'w') as writer:
         writer.writelines(statuses)
