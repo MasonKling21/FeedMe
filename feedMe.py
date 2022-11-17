@@ -22,12 +22,6 @@ TODO
 Handle login errors such as activity warning popups
 Basically just check that it's on the correct page
 
-Make sure selenium webdriver doesn't keep account logged in
-If it does, handle it
-
-Turn food, play, and motivation statuses into list
-Because the code is redundant as is
-
 Make the sleep calls more sophisticated
 i.e. make sure page is loaded, don't waste uneccesary time, etc.
 
@@ -39,6 +33,8 @@ def main():
     driver.get('http://twitter.com/i/flow/login')
 
     login(driver)
+
+    time.sleep(5)
 
     ### Bot logged in, go to profile page rather than feed
     driver.find_element(By.XPATH, "//a[@aria-label='Profile']").click()
@@ -91,7 +87,7 @@ def checkStatus(driver):
     val = driver.find_elements(By.XPATH, "//a[@role='link']")
     followers = val[8]
 
-    followers = getFollowers(str(followers))
+    followers = getFollowers(followers.text)
 
     ### Get number of replies on last tweet
     val = driver.find_elements(By.XPATH, "//div[@data-testid='reply']")
@@ -105,7 +101,7 @@ def checkStatus(driver):
     val = driver.find_elements(By.XPATH, "//div[@data-testid='like']")
     likes = val[1]
 
-    getStatus(driver, followers, likes, replies, retweets)
+    getStatus(driver, int(followers.text), int(likes.text), int(replies.text), int(retweets.text))
 
 def getStatus(driver, followers,  likes, replies, retweets):
     food = 0
