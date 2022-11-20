@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 
 import time
 import math
+import re
 
 """
 TODO
@@ -27,20 +28,7 @@ def interactionChecker(accountName):
     time.sleep(5)
 
     followers = getFollowers(driver)
-    likes = getLikes(driver)
-    replies = getReplies(driver)
-    retweets = getRetweets(driver)
-
-    print(followers.text)
-    print("---------------------")
-    for like in likes:
-        print(like.text)
-    print("---------------------")
-    for reply in replies:
-        print(reply.text)
-    print("---------------------")
-    for retweet in retweets:
-        print(retweet.text)
+    poster = getAccount(driver, accountName, followers)
 
 def getFollowers(driver):
     ### Store number of followers for later use
@@ -49,22 +37,29 @@ def getFollowers(driver):
 
     return followers
 
-def getReplies(driver):
-    ### Get number of replies on loaded tweets
-    replies = driver.find_elements(By.XPATH, "//div[@data-testid='reply']")
+def getAccount(driver, accountName, followers):
+    ### Get the poster so we can filter out retweets
+    poster = driver.find_elements(By.XPATH, "//div[@data-testid='Tweet-User-Avatar']/../..")
 
-    return replies
+    findUser = "//a[@href='/link']"
+    findUser = findUser.replace("link", accountName)
 
-def getRetweets(driver):
-    ### Get number of retweets on loaded tweets
-    retweets = driver.find_elements(By.XPATH, "//div[@data-testid='retweet']")
+    ### Finds the interaction on posts by account
+    for post in poster:
+        likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
+        retweets = post.find_elements(By.XPATH, "//div[@data-testid='retweet']")
+        replies = driver.find_elements(By.XPATH, "//div[@data-testid='reply']")
 
-    return retweets
+        getEngagementActivity(likes,retweets,replies,followers)
 
-def getLikes(driver):
-    ### Get number of likes on loaded tweets
-    likes = driver.find_elements(By.XPATH, "//div[@data-testid='like']")
+    return
 
-    return likes
+def getEngagementActivity(likes,retweets,replies,followers):
+    ### Convert inputs into real numbers
+    ### i.e 1M to 1000000 or 1k to 1000
+
+    print("Like Activity: " + likes / followers)
+    print("Reply Activity: " + replies / followers)
+    print("Retweet Activity" + retweets / followers)
 
 interactionChecker("elonmusk")
