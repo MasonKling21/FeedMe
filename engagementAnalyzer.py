@@ -2,21 +2,17 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 import time
-import math
-import re
 
 """
 TODO
 
-Ensure the tweet isn't a comment or a retweets
-If the tweet isn't a top level tweet will have to load more tweets
-because I want there to be at least 5 tweets analyzed per account
+Load 5 tweets no matter what
 
 Store information somewhere so that repeated requests don't
 need to be sent to the same accounts
 
-Will need to remove the letter value at the end of number larger than 1,000
-i.e: 1K and 1M
+Handle numbers with commas
+i.e: 1,000 turns to 1000
 
 """
 
@@ -35,7 +31,11 @@ def getFollowers(driver):
     val = driver.find_elements(By.XPATH, "//a[@role='link']")
     followers = val[8]
 
-    return followers
+    ### 117.5M Followers
+    ### Get 117.5M and remove Followers
+    followers = followers.text.split()
+
+    return followers[0]
 
 def getAccount(driver, accountName, followers):
     ### Get the poster so we can filter out retweets
@@ -47,16 +47,30 @@ def getAccount(driver, accountName, followers):
     ### Finds the interaction on posts by account
     for post in poster:
         likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
-        retweets = post.find_elements(By.XPATH, "//div[@data-testid='retweet']")
-        replies = driver.find_elements(By.XPATH, "//div[@data-testid='reply']")
+        retweets = post.find_element(By.XPATH, "//div[@data-testid='retweet']")
+        replies = driver.find_element(By.XPATH, "//div[@data-testid='reply']")
 
-        getEngagementActivity(likes,retweets,replies,followers)
+        getEngagementActivity(convert(likes.text),convert(retweets.text),convert(replies.text),convert(followers))
 
     return
 
-def getEngagementActivity(likes,retweets,replies,followers):
+def convert(num):
     ### Convert inputs into real numbers
-    ### i.e 1M to 1000000 or 1k to 1000
+    ### i.e 1M to 1000000 or 1.1k to 1100
+    if num:
+        mult = 1
+        ### 1,000
+        if num.endswith('K'):
+            mult = 1000
+            num = num[0:len(num)-1]
+        ### 1,000,000
+        elif num.endswith('M'):
+            mult = 1000000
+            num = num[0:len(num)-1]
+
+    return int(float(num) * mult)
+
+def getEngagementActivity(likes,retweets,replies,followers):
 
     print("Like Activity: " + likes / followers)
     print("Reply Activity: " + replies / followers)
