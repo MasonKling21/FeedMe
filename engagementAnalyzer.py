@@ -11,9 +11,6 @@ Load 5 tweets no matter what
 Store information somewhere so that repeated requests don't
 need to be sent to the same accounts
 
-Handle numbers with commas
-i.e: 1,000 turns to 1000
-
 """
 
 ### An activity checker to analyze how much activity accounts get on average
@@ -23,13 +20,17 @@ def interactionChecker(accountName):
 
     time.sleep(5)
 
-    followers = getFollowers(driver)
-    poster = getAccount(driver, accountName, followers)
+    followers = getFollowers(driver, accountName)
+    getAccount(driver, accountName, followers)
 
-def getFollowers(driver):
+    driver.quit()
+
+def getFollowers(driver, accountName):
     ### Store number of followers for later use
-    val = driver.find_elements(By.XPATH, "//a[@role='link']")
-    followers = val[8]
+    path = "//a[@href='/" + accountName + "/followers']"
+    followers = driver.find_element(By.XPATH, path)
+
+    print(followers.text)
 
     ### 117.5M Followers
     ### Get 117.5M and remove Followers
@@ -44,27 +45,39 @@ def getAccount(driver, accountName, followers):
     findUser = "//a[@href='/link']"
     findUser = findUser.replace("link", accountName)
 
+    count = 0
+
     ### Finds the interaction on posts by account
     for post in poster:
         likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
         retweets = post.find_element(By.XPATH, "//div[@data-testid='retweet']")
         replies = driver.find_element(By.XPATH, "//div[@data-testid='reply']")
-
+        
         getEngagementActivity(convert(likes.text),convert(retweets.text),convert(replies.text),convert(followers))
+        count += 1
+
+        if(count == 5):
+            return
 
     return
 
 def convert(num):
     ### Convert inputs into real numbers
     ### i.e 1M to 1000000 or 1.1k to 1100
+
+    ### Remove commas from number
+    num = num.replace(',', "")
+    ### Make ending K or M lowercase
+    num = num.lower()
+
     if num:
         mult = 1
         ### 1,000
-        if num.endswith('K'):
+        if num.endswith('k'):
             mult = 1000
             num = num[0:len(num)-1]
         ### 1,000,000
-        elif num.endswith('M'):
+        elif num.endswith('m'):
             mult = 1000000
             num = num[0:len(num)-1]
 
@@ -72,8 +85,8 @@ def convert(num):
 
 def getEngagementActivity(likes,retweets,replies,followers):
 
-    print("Like Activity: " + likes / followers)
-    print("Reply Activity: " + replies / followers)
-    print("Retweet Activity" + retweets / followers)
+    print("Like Activity: " + f"{((likes / followers) * 100 ):.4f}" + "%")
+    print("Reply Activity: " + f"{((replies / followers) * 100):.4f}" + "%")
+    print("Retweet Activity: " + f"{((retweets / followers) * 100):.4f}" + "%")
 
 interactionChecker("elonmusk")
