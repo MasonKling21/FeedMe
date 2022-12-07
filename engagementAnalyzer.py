@@ -9,8 +9,8 @@ TODO
 
 Load 5 tweets no matter what
 
-Store information somewhere so that repeated requests don't
-need to be sent to the same accounts
+Retweets and Replies always return the same number for each individual account
+So fix it
 
 """
 
@@ -69,6 +69,9 @@ def convert(num):
     ### Convert inputs into real numbers
     ### i.e 1M to 1000000 or 1.1k to 1100
 
+    if(num == ""):
+        return 0
+
     ### Remove commas from number
     num = num.replace(',', "")
     ### Make ending K or M lowercase
@@ -91,6 +94,6 @@ def getEngagementActivity(accountName,likes,retweets,replies,followers, writer):
     data = [accountName,str(likes),str(retweets),str(replies),str(followers), f"{((likes / followers) * 100 ):.4f}", f"{((replies / followers) * 100):.4f}", f"{((retweets / followers) * 100):.4f}"]
     writer.writerow(data)
 
-interactionChecker("billgates")
-#interactionChecker("jack")
-#interactionChecker("twitter")
+interactionChecker("BillGates")
+interactionChecker("jack")
+interactionChecker("Twitter")
