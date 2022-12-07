@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+import csv
 import time
 
 """
@@ -47,17 +48,20 @@ def getAccount(driver, accountName, followers):
 
     count = 0
 
-    ### Finds the interaction on posts by account
-    for post in poster:
-        likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
-        retweets = post.find_element(By.XPATH, "//div[@data-testid='retweet']")
-        replies = driver.find_element(By.XPATH, "//div[@data-testid='reply']")
-        
-        getEngagementActivity(convert(likes.text),convert(retweets.text),convert(replies.text),convert(followers))
-        count += 1
+    with open('activity.csv', 'a') as file:
+        writer = csv.writer(file)
 
-        if(count == 5):
-            return
+        ### Finds the interaction on posts by account
+        for post in poster:
+            likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
+            retweets = post.find_element(By.XPATH, "//div[@data-testid='retweet']")
+            replies = driver.find_element(By.XPATH, "//div[@data-testid='reply']")
+
+            getEngagementActivity(accountName, convert(likes.text),convert(retweets.text),convert(replies.text),convert(followers), writer)
+            count += 1
+
+            if(count == 5):
+                return
 
     return
 
@@ -83,10 +87,10 @@ def convert(num):
 
     return int(float(num) * mult)
 
-def getEngagementActivity(likes,retweets,replies,followers):
+def getEngagementActivity(accountName,likes,retweets,replies,followers, writer):
+    data = [accountName,str(likes),str(retweets),str(replies),str(followers), f"{((likes / followers) * 100 ):.4f}", f"{((replies / followers) * 100):.4f}", f"{((retweets / followers) * 100):.4f}"]
+    writer.writerow(data)
 
-    print("Like Activity: " + f"{((likes / followers) * 100 ):.4f}" + "%")
-    print("Reply Activity: " + f"{((replies / followers) * 100):.4f}" + "%")
-    print("Retweet Activity: " + f"{((retweets / followers) * 100):.4f}" + "%")
-
-interactionChecker("elonmusk")
+interactionChecker("billgates")
+#interactionChecker("jack")
+#interactionChecker("twitter")
