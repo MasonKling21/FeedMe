@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 
 import csv
 import time
+import os
 
 """
 TODO
@@ -48,14 +49,21 @@ def getAccount(driver, accountName, followers):
 
     count = 0
 
+    if(os.path.isfile("./activity.csv")):
+        exists = 1
+    else:
+        exists = 0
+
     with open('activity.csv', 'a') as file:
         writer = csv.writer(file)
-
+        if(exists == 0):
+            header = ["Account Name", "Likes", "Replies", "Retweets", "Followers", "Like Activity", "Reply Activity", "Retweet Activity"]
+            writer.writerow(header)
         ### Finds the interaction on posts by account
         for post in poster:
             likes = post.find_element(By.XPATH, ".//div[@data-testid='like']")
-            retweets = post.find_element(By.XPATH, "//div[@data-testid='retweet']")
-            replies = driver.find_element(By.XPATH, "//div[@data-testid='reply']")
+            retweets = post.find_element(By.XPATH, ".//div[@data-testid='retweet']")
+            replies = post.find_element(By.XPATH, ".//div[@data-testid='reply']")
 
             getEngagementActivity(accountName, convert(likes.text),convert(retweets.text),convert(replies.text),convert(followers), writer)
             count += 1
@@ -91,9 +99,8 @@ def convert(num):
     return int(float(num) * mult)
 
 def getEngagementActivity(accountName,likes,retweets,replies,followers, writer):
-    data = [accountName,str(likes),str(retweets),str(replies),str(followers), f"{((likes / followers) * 100 ):.4f}", f"{((replies / followers) * 100):.4f}", f"{((retweets / followers) * 100):.4f}"]
+    data = [accountName,str(likes),str(replies),str(retweets),str(followers), f"{((likes / followers) * 100 ):.4f}", f"{((replies / followers) * 100):.4f}", f"{((retweets / followers) * 100):.4f}"]
     writer.writerow(data)
 
-interactionChecker("BillGates")
+interactionChecker("elonmusk")
 interactionChecker("jack")
-interactionChecker("Twitter")
